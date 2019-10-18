@@ -2,12 +2,13 @@
 # Se quiser informar a matriz através do console, marque como True
 _MATRIZ_PELO_CONSOLE = False
 
-matriz = [[0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-		  [1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-		  [0.5, 0.5, 0.0, 0.0, 0.0, 0.0],
-		  [0.25, 0.25, 0.25, 0.0, 0.25, 0.0],
-		  [0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
-		  [0.0, 0.0, 0.0, 0.0, 1.0, 0.0]]
+matriz = [[0.0, 0.5, 0.0, 0.0, 0.5, 0.0, 0.0],
+		  [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+		  [0.0, 0.5, 0.0, 0.5, 0.0, 0.0, 0.0],
+		  [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+		  [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+		  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
+		  [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]]
 		  
 # Tamanho do espaço de estados
 E = len(matriz)
@@ -19,14 +20,11 @@ matrizAcessibilidade = []
 # Checa se matriz é markoviana
 def isMatrizMarkoviana(matriz):
 	for linha in matriz:
-		soma = 0
-		
+		soma = 0		
 		for coluna in linha:
-			soma += coluna
-			
+			soma += coluna			
 		if soma != 1.0:
-			return False
-	
+			return False	
 	return True
 	
 # Função que retorna os estados acessíveis de um estado
@@ -56,18 +54,47 @@ def printAcessiveis(matrizAcessibilidade):
 # Função que imprime os estados comunicantes	
 def printComunicantes(matrizAcessibilidade):
 	dic = {}
+	
+	for e in range(E):
+		dic[e] = []
+	
 	print(">>> Estados Comunicantes")
 	print("\t#estado <--> estado")
 	for i in range(0, len(matrizAcessibilidade)):
-		for j in range(0, len(matrizAcessibilidade)):
+		for j in range(i, len(matrizAcessibilidade)):
 			if i != j:
 				if matrizAcessibilidade[i][j] == True and matrizAcessibilidade[j][i] == True:
-					if i not in dic and j not in dic:
+					if i not in dic[j] and j not in dic[i]:
 						output = "\t{} <--> {}"
 						print(output.format(i, j))
-						dic[i] = j
-						dic[j] = i
-
+						dic[i].append(j)
+						dic[j].append(i)
+	return dic
+	
+# Função que imprime as classes
+def printClasses(dicionario):
+	visitado = [False] * len(dicionario)
+	classes = []
+	for d in dicionario:
+		if(len(dicionario[d]) > 0 and visitado[d] == False):
+			visitado[d] = True;
+			classe = [d]
+			
+			for i in dicionario[d]:
+				classe.append(i)
+				visitado[i] = True
+			
+			classes.append(classe)
+			
+	print(">>> Classes")
+	for i in range(0, len(classes)):
+		txtClasse = "\tClasse {}: "
+		print(txtClasse.format(i + 1), end = '')
+		for j in range(0, len(classes[i])):
+			print(classes[i][j], end = '')
+			if j != len(classes[i]) - 1:
+				print(", ", end = '')
+		print()
 # Executando
 if _MATRIZ_PELO_CONSOLE:
 	matriz.clear()
@@ -92,6 +119,7 @@ if _MATRIZ_PELO_CONSOLE:
 if isMatrizMarkoviana(matriz):
 	populaMatrizAcessiveis()
 	printAcessiveis(matrizAcessibilidade)
-	printComunicantes(matrizAcessibilidade)
+	dic = printComunicantes(matrizAcessibilidade)
+	printClasses(dic)
 else:
 	print("Matriz não é Markoviana")
