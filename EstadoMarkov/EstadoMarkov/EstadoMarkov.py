@@ -197,7 +197,7 @@ class CadeiaDeMarkov:
 			print("Matriz não é markoviana")
 
 # Se quiser informar a matriz através do console, marque como True
-_MATRIZ_PELO_CONSOLE = True
+_MATRIZ_PELO_CONSOLE = False
 
 matriz = [[0.0, 1.0, 0.0, 0.0, 0.0],
 		  [1.0, 0.0, 0.0, 0.0, 0.0],
